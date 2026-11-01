@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Paper Trading v3</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f1419">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--text:#14202b;--muted:#5d6b78;--line:#dfe5ea;--up:#0a8f54;--down:#d03b3b;--accent:#2f6fed;--warn:#b26a00;--warnbg:#fff3df}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1419;--card:#18202a;--text:#e8eef3;--muted:#93a1ad;--line:#27323d;--up:#34c58a;--down:#ff6b6b;--accent:#6e9bff;--warn:#ffc266;--warnbg:#3a2c12}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+main{max-width:720px;margin:0 auto;padding:14px 14px 40px}
+header{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:6px 0 2px}
+h1{font-size:19px;margin:0}
+.badge{font-size:11px;font-weight:700;letter-spacing:.05em;padding:3px 8px;border-radius:99px;background:var(--warnbg);color:var(--warn)}
+.sub{color:var(--muted);font-size:13px;margin:0 0 12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.card h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.big{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums}
+.lbl{color:var(--muted);font-size:12px}
+.up{color:var(--up)}.down{color:var(--down)}
+.banner{background:var(--warnbg);color:var(--warn);border-radius:12px;padding:10px 12px;margin-bottom:12px;font-size:13px}
+.pend{border-left:4px solid var(--accent);padding:6px 10px;margin-bottom:6px;background:var(--bg);border-radius:6px}
+.table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.table th{font-size:11px;color:var(--muted);text-align:right;font-weight:600;padding:4px 4px}
+.table td{padding:7px 4px;border-top:1px solid var(--line);text-align:right;font-size:14px}
+.table th:first-child,.table td:first-child{text-align:left}
+.tag{font-size:11px;padding:2px 7px;border-radius:99px;background:var(--bg);color:var(--muted);white-space:nowrap}
+.tag.on{background:var(--accent);color:#fff}
+.scroll{overflow-x:auto}
+.note{color:var(--muted);font-size:12px;margin-top:10px}
+svg{width:100%;height:auto;display:block}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-top:6px}
+.dot{display:inline-block;width:10px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle}
+</style>
+</head>
+<body>
+<main>
+  <header><h1>Paper Trading v3</h1><span class="badge">SIMULADO</span></header>
+  <p class="sub" id="sub">Cargando…</p>
+  <div id="app"></div>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+function el(tag, cls, text) { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; }
+const fmt = (x, d = 2) => Number(x).toLocaleString("es-EC", { minimumFractionDigits: d, maximumFractionDigits: d });
+const pct = (x) => (x >= 0 ? "+" : "") + fmt(x, 2) + "%";
+const sign = (x) => (x >= 0 ? "up" : "down");
+const price = (x) => Number(x).toLocaleString("es-EC", { maximumSignificantDigits: 6 });
+
+function card(title) { const c = el("section", "card"); if (title) c.appendChild(el("h2", null, title)); return c; }
+
+function chart(curva) {
+  const NS = "http://www.w3.org/2000/svg";
+  const W = 600, H = 200, P = 8;
+  const vals = curva.flatMap((r) => [r.estrategia, r.comprar_mantener]);
+  const lo = Math.min(...vals), hi = Math.max(...vals), span = hi - lo || 1;
+  const x = (i) => P + (i * (W - 2 * P)) / (curva.length - 1);
+  const y = (v) => H - P - ((v - lo) / span) * (H - 2 * P);
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  [["comprar_mantener", "var(--muted)", "4 4"], ["estrategia", "var(--accent)", ""]].forEach(([k, color, dash]) => {
+    const p = document.createElementNS(NS, "polyline");
+    p.setAttribute("points", curva.map((r, i) => `${x(i).toFixed(1)},${y(r[k]).toFixed(1)}`).join(" "));
+    p.setAttribute("fill", "none"); p.setAttribute("stroke", color); p.setAttribute("stroke-width", "2.5");
+    p.setAttribute("stroke-linejoin", "round"); if (dash) p.setAttribute("stroke-dasharray", dash);
+    svg.appendChild(p);
+  });
+  return svg;
+}
+
+function render(s) {
+  const app = $("app"); app.textContent = "";
+  const horas = (Date.now() - new Date(s.generado).getTime()) / 36e5;
+  $("sub").textContent = `Última vela cerrada: ${s.ultima_vela} · día ${s.dias} · perfil ${s.perfil} · actualizado ${new Date(s.generado).toLocaleString("es-EC", { dateStyle: "medium", timeStyle: "short" })}`;
+  if (horas > 40) app.appendChild(el("div", "banner", `Los datos tienen ${Math.round(horas)} horas. Si pasa de 2 días, revisa la pestaña Actions de GitHub.`));
+
+  const top = card(); const g = el("div", "grid");
+  [["Estrategia v3", s.total, s.total_pct], ["Comprar y mantener", s.bh, s.bh_pct]].forEach(([t, v, p]) => {
+    const d = el("div"); d.appendChild(el("div", "lbl", t)); d.appendChild(el("div", "big", fmt(v)));
+    d.appendChild(el("div", sign(p), pct(p))); g.appendChild(d);
+  });
+  top.appendChild(g);
+  top.appendChild(el("div", "note", `Capital simulado inicial: ${fmt(s.inicial, 0)} · operaciones cerradas: ${s.n_operaciones}`));
+  app.appendChild(top);
+
+  const gc = card("Evolución del capital");
+  if (s.curva.length >= 2) {
+    gc.appendChild(chart(s.curva));
+    const lg = el("div", "legend");
+    [["var(--accent)", "Estrategia"], ["var(--muted)", "Comprar y mantener"]].forEach(([c, t]) => {
+      const i = el("span"); const d = el("span", "dot"); d.style.background = c; i.appendChild(d); i.appendChild(document.createTextNode(t)); lg.appendChild(i);
+    });
+    gc.appendChild(lg);
+  } else gc.appendChild(el("div", "note", "Aún no hay suficientes días para dibujar el gráfico."));
+  app.appendChild(gc);
+
+  const pend = s.activos.filter((a) => a.pend_compra || a.pend_venta);
+  const pc = card("Órdenes simuladas para mañana");
+  if (pend.length) pend.forEach((a) => pc.appendChild(el("div", "pend", `${a.nombre}: ${a.pend_compra ? "COMPRAR" : "VENDER"} a la apertura de mañana`)));
+  else pc.appendChild(el("div", "note", "Ninguna por ahora."));
+  app.appendChild(pc);
+
+  const abiertas = s.activos.filter((a) => a.pos);
+  if (abiertas.length) {
+    const oc = card("Posiciones abiertas");
+    abiertas.forEach((a) => {
+      const r = el("div", "pend");
+      r.appendChild(el("strong", null, a.nombre));
+      r.appendChild(el("div", "lbl", `Entrada ${price(a.pos.entrada)} · stop ${price(a.pos.stop)} · último ${price(a.ultimo_precio)}`));
+      r.appendChild(el("div", sign(a.pos.pnl_abierto), `Resultado abierto: ${a.pos.pnl_abierto >= 0 ? "+" : ""}${fmt(a.pos.pnl_abierto)}`));
+      oc.appendChild(r);
+    });
+    app.appendChild(oc);
+  }
+
+  const ac = card("Activos"); const sc = el("div", "scroll"); const t = el("table", "table");
+  const hr = el("tr"); ["Activo", "Capital", "Estrategia", "B&H", "Estado"].forEach((h) => hr.appendChild(el("th", null, h)));
+  const th = el("thead"); th.appendChild(hr); t.appendChild(th);
+  const tb = el("tbody");
+  s.activos.forEach((a) => {
+    const tr = el("tr");
+    tr.appendChild(el("td", null, a.nombre.replace("/USDT", "")));
+    tr.appendChild(el("td", null, fmt(a.capital, 1)));
+    tr.appendChild(el("td", sign(a.rend_pct), pct(a.rend_pct)));
+    tr.appendChild(el("td", sign(a.bh_pct), pct(a.bh_pct)));
+    const st = a.pos ? "Comprado" : a.pend_compra ? "Compra mañana" : a.pend_venta ? "Venta mañana" : "Efectivo";
+    const td = el("td"); td.appendChild(el("span", "tag" + (a.pos || a.pend_compra || a.pend_venta ? " on" : ""), st)); tr.appendChild(td);
+    tb.appendChild(tr);
+  });
+  t.appendChild(tb); sc.appendChild(t); ac.appendChild(sc); app.appendChild(ac);
+
+  const oc2 = card("Últimas operaciones cerradas");
+  if (s.operaciones.length) {
+    s.operaciones.slice(0, 10).forEach((o) => {
+      const r = el("div", "pend");
+      r.appendChild(el("strong", null, o.activo));
+      r.appendChild(el("span", sign(o.pnl), `  ${o.pnl >= 0 ? "+" : ""}${fmt(o.pnl)}`));
+      r.appendChild(el("div", "lbl", `${o.entrada} → ${o.salida} · ${price(o.precio_entrada)} → ${price(o.precio_salida)}`));
+      oc2.appendChild(r);
+    });
+  } else oc2.appendChild(el("div", "note", "Todavía no hay operaciones cerradas."));
+  app.appendChild(oc2);
+
+  app.appendChild(el("p", "note", "Todo es simulado: no hay dinero real ni claves de ningún exchange. Con pocas operaciones, estos números validan el funcionamiento, no demuestran una ventaja. No es asesoría financiera."));
+}
+
+fetch("status.json?t=" + Date.now()).then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then(render)
+  .catch(() => { $("sub").textContent = "No pude cargar los datos."; $("app").textContent = ""; $("app").appendChild(el("div", "banner", "No se pudo leer status.json. Si acabas de configurar todo, ejecuta el workflow una vez a mano.")); });
+
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+</script>
+</body>
+</html>
