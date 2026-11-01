@@ -1,0 +1,85 @@
+name: Paper trading v3 (diario)
+
+on:
+  schedule:
+    - cron: "30 0 * * *"
+  workflow_dispatch:
+    inputs:
+      nuevo:
+        description: "Empezar un paper trading NUEVO si no existe paper_state.json"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: paper-diario
+  cancel-in-progress: false
+
+jobs:
+  correr:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Instalar librerías
+        run: pip install -r requirements.txt
+
+      - name: Verificar estado (protege tu historial)
+        run: |
+          if [ ! -f paper_state.json ] && [ "${{ inputs.nuevo }}" != "true" ]; then
+            echo "::error::Falta paper_state.json. Súbelo al repositorio, o ejecuta a mano con 'nuevo' = true para empezar de cero."
+            exit 1
+          fi
+
+      - name: Ejecutar paper trading
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          RESUMEN_DIARIO: "1"
+        run: python paper_v3.py
+
+      - name: Generar datos del panel
+        run: python make_status.py
+
+      - name: Guardar estado en el repositorio
+        run: |
+          git config user.name "paper-bot"
+          git config user.email "paper-bot@users.noreply.github.com"
+          git add paper_state.json paper_trades.csv paper_equity.csv docs/status.json
+          git diff --cached --quiet || git commit -m "estado $(date -u +%F)"
+          git push
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      - name: Publicar panel
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Avisar por Telegram si falló
+        if: failure()
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          if [ -n "$TELEGRAM_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
+            curl -s "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
+              --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
+              --data-urlencode "text=El paper trading v3 falló hoy. Revisa la pestaña Actions del repositorio." > /dev/null
+          fi
