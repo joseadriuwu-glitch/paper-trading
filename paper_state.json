@@ -1,0 +1,150 @@
+{
+ "profile": "conservador",
+ "capital": 10000.0,
+ "assets": {
+  "BTC/USDT": {
+   "name": "BTC/USDT",
+   "init": 833.3333333333334,
+   "equity": 833.3333333333334,
+   "mtm": 833.3333333333334,
+   "pos": null,
+   "pend_in": false,
+   "pend_out": false,
+   "last": "2026-10-31",
+   "start_price": 81341.7,
+   "last_close": 77582.24
+  },
+  "ETH/USDT": {
+   "name": "ETH/USDT",
+   "init": 833.3333333333334,
+   "equity": 833.3333333333334,
+   "mtm": 833.3333333333334,
+   "pos": null,
+   "pend_in": false,
+   "pend_out": false,
+   "last": "2026-10-31",
+   "start_price": 2360.29,
+   "last_close": 2256.04
+  },
+  "BNB/USDT": {
+   "name": "BNB/USDT",
+   "init": 833.3333333333334,
+   "equity": 833.3333333333334,
+   "mtm": 833.3333333333334,
+   "pos": null,
+   "pend_in": false,
+   "pend_out": false,
+   "last": "2026-10-31",
+   "start_price": 758.74,
+   "last_close": 703.92
+  },
+  "XRP/USDT": {
+   "name": "XRP/USDT",
+   "init": 833.3333333333334,
+   "equity": 833.3333333333334,
+   "mtm": 833.3333333333334,
+   "pos": null,
+   "pend_in": false,
+   "pend_out": false,
+   "last": "2026-10-31",
+   "start_price": 1.3251,
+   "last_close": 1.2519
+  },
+  "ADA/USDT": {
+   "name": "ADA/USDT",
+   "init": 833.3333333333334,
+   "equity": 833.3333333333334,
+   "mtm": 833.3333333333334,
+   "pos": null,
+   "pend_in": false,
+   "pend_out": false,
+   "last": "2026-10-31",
+   "start_price": 0.20591,
+   "last_close": 0.19293
+  },
+  "DOGE/USDT": {
+   "name": "DOGE/USDT",
+   "init": 833.3333333333334,
+   "equity": 833.3333333333334,
+   "mtm": 833.3333333333334,
+   "pos": null,
+   "pend_in": false,
+   "pend_out": false,
+   "last": "2026-10-31",
+   "start_price": 0.07982,
+   "last_close": 0.07569
+  },
+  "SOL/USDT": {
+   "name": "SOL/USDT",
+   "init": 833.3333333333334,
+   "equity": 833.3333333333334,
+   "mtm": 833.3333333333334,
+   "pos": null,
+   "pend_in": false,
+   "pend_out": false,
+   "last": "2026-10-31",
+   "start_price": 102.47,
+   "last_close": 95.56
+  },
+  "LTC/USDT": {
+   "name": "LTC/USDT",
+   "init": 833.3333333333334,
+   "equity": 833.3333333333334,
+   "mtm": 833.3333333333334,
+   "pos": null,
+   "pend_in": false,
+   "pend_out": false,
+   "last": "2026-10-31",
+   "start_price": 59.26,
+   "last_close": 56.05
+  },
+  "LINK/USDT": {
+   "name": "LINK/USDT",
+   "init": 833.3333333333334,
+   "equity": 833.3333333333334,
+   "mtm": 833.3333333333334,
+   "pos": null,
+   "pend_in": false,
+   "pend_out": false,
+   "last": "2026-10-31",
+   "start_price": 11.812,
+   "last_close": 11.668
+  },
+  "AVAX/USDT": {
+   "name": "AVAX/USDT",
+   "init": 833.3333333333334,
+   "equity": 833.3333333333334,
+   "mtm": 833.3333333333334,
+   "pos": null,
+   "pend_in": false,
+   "pend_out": false,
+   "last": "2026-10-31",
+   "start_price": 9.015,
+   "last_close": 8.58
+  },
+  "DOT/USDT": {
+   "name": "DOT/USDT",
+   "init": 833.3333333333334,
+   "equity": 833.3333333333334,
+   "mtm": 833.3333333333334,
+   "pos": null,
+   "pend_in": false,
+   "pend_out": false,
+   "last": "2026-10-31",
+   "start_price": 1.022,
+   "last_close": 0.957
+  },
+  "TRX/USDT": {
+   "name": "TRX/USDT",
+   "init": 833.3333333333334,
+   "equity": 829.0133653986809,
+   "mtm": 829.0133653986809,
+   "pos": null,
+   "pend_in": false,
+   "pend_out": false,
+   "last": "2026-10-31",
+   "start_price": 0.33,
+   "last_close": 0.3115
+  }
+ }
+}
