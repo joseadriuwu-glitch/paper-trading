@@ -12,6 +12,7 @@ import sys
 import json
 import argparse
 import urllib.request
+import urllib.error
 import numpy as np
 import pandas as pd
 from config import PROFILES, SETTINGS, UNIVERSO
@@ -22,16 +23,31 @@ DAY_MS = 86_400_000
 
 
 def notify(msg: str):
+    """Imprime el mensaje y, si hay secretos, lo envía por Telegram. Informa del resultado SIN mostrar el token."""
     print(msg, flush=True)
     tok, chat = os.getenv("TELEGRAM_TOKEN"), os.getenv("TELEGRAM_CHAT_ID")
-    if tok and chat:
+    if not tok or not chat:
+        faltan = [n for n, v in (("TELEGRAM_TOKEN", tok), ("TELEGRAM_CHAT_ID", chat)) if not v]
+        print(f"[Telegram] NO enviado: faltan los secretos {', '.join(faltan)} "
+              f"(deben estar en Settings > Secrets and variables > Actions > Repository secrets)", flush=True)
+        return
+    try:
+        data = json.dumps({"chat_id": chat, "text": msg[:3500]}).encode()
+        req = urllib.request.Request(f"https://api.telegram.org/bot{tok}/sendMessage",
+                                     data, {"Content-Type": "application/json"})
+        urllib.request.urlopen(req, timeout=15)
+        print("[Telegram] enviado correctamente", flush=True)
+    except urllib.error.HTTPError as e:
         try:
-            data = json.dumps({"chat_id": chat, "text": msg[:3500]}).encode()
-            req = urllib.request.Request(f"https://api.telegram.org/bot{tok}/sendMessage",
-                                         data, {"Content-Type": "application/json"})
-            urllib.request.urlopen(req, timeout=10)
+            desc = json.loads(e.read().decode()).get("description", "")
         except Exception:
-            pass
+            desc = ""
+        pista = {401: "el token es incorrecto o está incompleto",
+                 400: "el chat id es incorrecto, o no le has escrito /start a tu bot",
+                 403: "el bot no puede escribirte: abre tu bot y toca Iniciar"}.get(e.code, "")
+        print(f"[Telegram] ERROR {e.code}: {desc} -> {pista}", flush=True)
+    except Exception as e:
+        print(f"[Telegram] ERROR de conexión: {type(e).__name__}", flush=True)
 
 
 def make_ccxt_fetcher(exchange="binanceus", limit=900):
