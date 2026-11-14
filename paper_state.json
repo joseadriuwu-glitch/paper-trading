@@ -10,9 +10,9 @@
    "pos": null,
    "pend_in": false,
    "pend_out": false,
-   "last": "2026-11-12",
+   "last": "2026-11-13",
    "start_price": 81341.7,
-   "last_close": 71427.63
+   "last_close": 68304.01
   },
   "ETH/USDT": {
    "name": "ETH/USDT",
@@ -22,9 +22,9 @@
    "pos": null,
    "pend_in": false,
    "pend_out": false,
-   "last": "2026-11-12",
+   "last": "2026-11-13",
    "start_price": 2360.29,
-   "last_close": 2019.44
+   "last_close": 1929.59
   },
   "BNB/USDT": {
    "name": "BNB/USDT",
@@ -34,9 +34,9 @@
    "pos": null,
    "pend_in": false,
    "pend_out": false,
-   "last": "2026-11-12",
+   "last": "2026-11-13",
    "start_price": 758.74,
-   "last_close": 656.57
+   "last_close": 629.21
   },
   "XRP/USDT": {
    "name": "XRP/USDT",
@@ -46,9 +46,9 @@
    "pos": null,
    "pend_in": false,
    "pend_out": false,
-   "last": "2026-11-12",
+   "last": "2026-11-13",
    "start_price": 1.3251,
-   "last_close": 1.0409
+   "last_close": 1.0104
   },
   "ADA/USDT": {
    "name": "ADA/USDT",
@@ -58,9 +58,9 @@
    "pos": null,
    "pend_in": false,
    "pend_out": false,
-   "last": "2026-11-12",
+   "last": "2026-11-13",
    "start_price": 0.20591,
-   "last_close": 0.17306
+   "last_close": 0.16794
   },
   "DOGE/USDT": {
    "name": "DOGE/USDT",
@@ -70,9 +70,9 @@
    "pos": null,
    "pend_in": false,
    "pend_out": false,
-   "last": "2026-11-12",
+   "last": "2026-11-13",
    "start_price": 0.07982,
-   "last_close": 0.06633
+   "last_close": 0.06436
   },
   "SOL/USDT": {
    "name": "SOL/USDT",
@@ -82,9 +82,9 @@
    "pos": null,
    "pend_in": false,
    "pend_out": false,
-   "last": "2026-11-12",
+   "last": "2026-11-13",
    "start_price": 102.47,
-   "last_close": 81.73
+   "last_close": 78.19
   },
   "LTC/USDT": {
    "name": "LTC/USDT",
@@ -94,9 +94,9 @@
    "pos": null,
    "pend_in": false,
    "pend_out": false,
-   "last": "2026-11-12",
+   "last": "2026-11-13",
    "start_price": 59.26,
-   "last_close": 50.03
+   "last_close": 49.22
   },
   "LINK/USDT": {
    "name": "LINK/USDT",
@@ -106,9 +106,9 @@
    "pos": null,
    "pend_in": false,
    "pend_out": false,
-   "last": "2026-11-12",
+   "last": "2026-11-13",
    "start_price": 11.812,
-   "last_close": 10.113
+   "last_close": 9.819
   },
   "AVAX/USDT": {
    "name": "AVAX/USDT",
@@ -118,9 +118,9 @@
    "pos": null,
    "pend_in": false,
    "pend_out": false,
-   "last": "2026-11-12",
+   "last": "2026-11-13",
    "start_price": 9.015,
-   "last_close": 8.337
+   "last_close": 8.206
   },
   "DOT/USDT": {
    "name": "DOT/USDT",
@@ -130,9 +130,9 @@
    "pos": null,
    "pend_in": false,
    "pend_out": false,
-   "last": "2026-11-12",
+   "last": "2026-11-13",
    "start_price": 1.022,
-   "last_close": 0.833
+   "last_close": 0.811
   },
   "TRX/USDT": {
    "name": "TRX/USDT",
@@ -142,9 +142,9 @@
    "pos": null,
    "pend_in": false,
    "pend_out": false,
-   "last": "2026-11-12",
+   "last": "2026-11-13",
    "start_price": 0.33,
-   "last_close": 0.3158
+   "last_close": 0.3124
   }
  }
 }
